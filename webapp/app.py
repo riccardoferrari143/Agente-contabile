@@ -307,11 +307,19 @@ def pagina_report():
     sezione = sezioni_opzioni[sezione_label]
 
     if st.button("🚀 Genera Report", type="primary", use_container_width=True):
-        movimenti_filtrati = get_movimenti(
-            st.session_state.azienda_id,
-            da=da_str or None, a=a_str or None,
-            commessa=commessa_scelta if commessa_scelta!="Tutte" else None
-        )
+        from agente_contabile import parse_data as _pd
+        import datetime as _dt
+        _comm = commessa_scelta if commessa_scelta!="Tutte" else None
+        movimenti_all = get_movimenti(st.session_state.azienda_id, commessa=_comm)
+        _dd = _pd(da_str) if da_str else None
+        _da = _pd(a_str) if a_str else None
+        def _in_range(m):
+            d = _pd(str(m.get("data","")))
+            if not d: return True
+            if _dd and d < _dd: return False
+            if _da and d > _da: return False
+            return True
+        movimenti_filtrati = [m for m in movimenti_all if _in_range(m)]
         if not movimenti_filtrati:
             st.warning("Nessun movimento trovato con i filtri selezionati."); return
 
