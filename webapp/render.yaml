@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: agente-contabile
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: streamlit run app.py --server.port $PORT --server.address 0.0.0.0
+    envVars:
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_PRICE_BASE
+        sync: false
+      - key: STRIPE_PRICE_PRO
+        sync: false
